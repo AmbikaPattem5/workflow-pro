@@ -1,0 +1,19 @@
+.sidebar{
+    width: 200px;
+    border:20px;
+    border-right: 1px solid #ddd;
+}
+
+.sidebar ul{
+    list-style : none;
+    padding:0;
+}
+
+.sidebar li{
+    margin:12px 0;
+}
+
+.sidebar a{
+    text-decoration: none;
+    
+}

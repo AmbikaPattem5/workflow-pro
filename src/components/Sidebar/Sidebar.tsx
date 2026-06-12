@@ -1,7 +1,8 @@
 import { NavLink } from "react-router-dom";
+import '../../styles/sidebar.css'
 function Sidebar() {
     return(
-        <aside>
+        <aside className="sidebar">
             <h2>WorkFlow Pro</h2>
             <nav>
                 <ul>
