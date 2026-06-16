@@ -3,7 +3,11 @@
     border:20px;
     border-right: 1px solid #ddd;
 }
-
+.sidebar h2{
+    text-align: center;
+    padding: 10px 0;
+    font-size: 30px;
+}
 .sidebar ul{
     list-style : none;
     padding:0;
@@ -11,9 +15,13 @@
 
 .sidebar li{
     margin:12px 0;
+    text-align: left;
+    margin-left: 20px;
+    font-size: 18px;
 }
 
 .sidebar a{
     text-decoration: none;
-    
+    display: block;
+    padding: 8px;
 }

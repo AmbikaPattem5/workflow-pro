@@ -1,3 +1,4 @@
+import '../StatCard/statcard.css';
 type StatCardProps={
     title: string;
     value: number;
