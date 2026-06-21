@@ -1,6 +1,7 @@
+export type ProjectStatus = "Pending" | "InProgress" | "Completed";
 export type Project={
     id:number;
     name:string;
-    status: "Pending" | "InProgress" | "Completed";
+    status: ProjectStatus;
 }
 
