@@ -21,6 +21,10 @@ function Dashboard(){
      setProjectName("");
      console.log(projects);
      }
+     const handleDeleteProject=(id:number)=>{
+        const updatedProjects=projects.filter(project=>project.id!==id);
+        setProjects(updatedProjects)
+     }
      
     return (
         
@@ -35,7 +39,7 @@ function Dashboard(){
             </div>
             <div className="projects-container">
                 {projects.map(project=>(
-                    <ProjectCard key={project.id} project={project}/>
+                    <ProjectCard key={project.id} project={project} onDelete={handleDeleteProject}/>
                 ))}
             </div>
         </div>
