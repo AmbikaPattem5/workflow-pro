@@ -49,6 +49,9 @@ function Dashboard(){
         }
         
         }
+        const totalProjects=projects.length;
+        const pendingTasks=projects.filter(project=>project.status==="Pending").length;
+        const completedTasks=projects.filter(project=>project.status==="Completed").length;
     return (
         
         <div>
@@ -56,14 +59,18 @@ function Dashboard(){
             <input type="text" placeholder="Project Name" value={projectName} onChange={(e)=>setProjectName(e.target.value)}/>
             <button onClick={handleAddProject}>{editingProjectId===null?"Add Project":"Save Changes"}</button>
             <div className="stats-container">
-                <StatCard title="Total Projects" value={12}/>
-                <StatCard title="Completed Tasks" value={84}/>
-                <StatCard title="Pending Tasks" value={16}/>
+                <StatCard title="Total Projects" value={totalProjects}/>
+                <StatCard title="Completed Tasks" value={completedTasks}/>
+                <StatCard title="Pending Tasks" value={pendingTasks}/>
+                
             </div>
             <div className="projects-container">
-                {projects.map(project=>(
+                {totalProjects>0?
+                projects.map(project=>(
                     <ProjectCard key={project.id} project={project} onDelete={handleDeleteProject} onEdit={handleEditProject}/>
-                ))}
+                ))
+                : <h1>No Projects Found</h1>
+                }
             </div>
         </div>
     );
