@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import StatCard from "../../components/StatCard/StatCard";
 import {projects as initialProjects} from "../../services/projects";
 import type {Project} from "../../types/project";
@@ -8,7 +8,8 @@ function Dashboard(){
      const [projectName, setProjectName] = useState("");
      const [projects,setProjects]=useState<Project[]>(initialProjects);
      const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
-     
+     const [searchName, setSearchName] = useState("");
+     const [statusFilter,setStatusFilter]=useState("All")
      const handleAddProject=()=>{
         if(!projectName.trim()){
             return;
@@ -52,10 +53,23 @@ function Dashboard(){
         const totalProjects=projects.length;
         const pendingTasks=projects.filter(project=>project.status==="Pending").length;
         const completedTasks=projects.filter(project=>project.status==="Completed").length;
+        const filteredProjects=projects.filter(project=>project.name.toLowerCase().includes(searchName.toLowerCase()));
+        const statusFilteredProjects= 
+        statusFilter==="All"?filteredProjects :
+        filteredProjects.filter(project=>project.status===statusFilter);
+        console.log(filteredProjects);
+        console.log("status"+statusFilteredProjects);
+
     return (
         
         <div>
             <h1>Dashboard</h1>
+            <input type="text" placeholder="Search Project" value={searchName} onChange={(e)=>setSearchName(e.target.value)}/>
+            <select name="status" value={statusFilter} onChange={(e)=>setStatusFilter(e.target.value)}>
+                <option value="All">All</option>
+                <option value="Pending">Pending</option>
+                <option value="Completed">Completed</option>
+            </select>
             <input type="text" placeholder="Project Name" value={projectName} onChange={(e)=>setProjectName(e.target.value)}/>
             <button onClick={handleAddProject}>{editingProjectId===null?"Add Project":"Save Changes"}</button>
             <div className="stats-container">
@@ -65,11 +79,11 @@ function Dashboard(){
                 
             </div>
             <div className="projects-container">
-                {totalProjects>0?
-                projects.map(project=>(
+                {statusFilteredProjects.length!==0?
+                statusFilteredProjects.map(project=>(
                     <ProjectCard key={project.id} project={project} onDelete={handleDeleteProject} onEdit={handleEditProject}/>
                 ))
-                : <h1>No Projects Found</h1>
+                : <h1>No Matching Projects Found</h1>
                 }
             </div>
         </div>

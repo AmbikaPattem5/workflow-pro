@@ -3,7 +3,7 @@ export const projects: Project[] =[
     {
         id:1,
         name:"Workflow Pro",
-        status:"InProgress"
+        status:"Pending"
     },
     {
         id:2,
