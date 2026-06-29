@@ -1,7 +1,7 @@
 import { use, useState } from "react";
 import StatCard from "../../components/StatCard/StatCard";
 import {projects as initialProjects} from "../../services/projects";
-import type {Project} from "../../types/project";
+import type {Project, ProjectStatus} from "../../types/project";
 import ProjectCard from "../../components/ProjectCard/ProjectCard";
 import './dashboard.css';
 function Dashboard(){
@@ -10,6 +10,7 @@ function Dashboard(){
      const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
      const [searchName, setSearchName] = useState("");
      const [statusFilter,setStatusFilter]=useState("All")
+     const [sortOption,setSortOption]=useState("A-Z")
      const handleAddProject=()=>{
         if(!projectName.trim()){
             return;
@@ -43,6 +44,19 @@ function Dashboard(){
         const updatedProjects=projects.filter(project=>project.id!==id);
         setProjects(updatedProjects)
      }
+     const handleStatusProject=(id:number, status: ProjectStatus)=>{
+        const updatedStatusProject=projects.map(project=>
+            {
+                if(project.id===id){
+                    return{...project,status:status==="Completed"?"Pending":"Completed"}
+                }
+                else{
+                    return project;
+                }
+                
+        })
+        setProjects(updatedStatusProject);
+     }
      const handleEditProject=(id:number,name:string)=>{
         {
             setEditingProjectId(id);
@@ -59,7 +73,27 @@ function Dashboard(){
         filteredProjects.filter(project=>project.status===statusFilter);
         console.log(filteredProjects);
         console.log("status"+statusFilteredProjects);
-
+        const sortedProjects=[...statusFilteredProjects];
+        sortedProjects.sort((a,b)=>{
+            if(sortOption==='A-Z'){
+            return a.name.localeCompare(b.name);
+            }
+            else if(sortOption==='Z-A')
+            {
+                return b.name.localeCompare(a.name);
+            }
+            else if(sortOption==='Newest')
+            {
+                return b.id-a.id;
+            }
+            else if(sortOption==='Oldest')
+            {
+                return a.id-b.id;
+            }
+            else {
+                return 0;
+            }
+        });
     return (
         
         <div>
@@ -69,6 +103,12 @@ function Dashboard(){
                 <option value="All">All</option>
                 <option value="Pending">Pending</option>
                 <option value="Completed">Completed</option>
+            </select>
+            <select name="sort" value={sortOption} onChange={(e)=>setSortOption(e.target.value)}>
+                <option value="A-Z">A-Z</option>
+                <option value="Z-A">Z-A</option>
+                <option value="Newest">Newest</option>
+                <option value="Oldest">Oldest</option>
             </select>
             <input type="text" placeholder="Project Name" value={projectName} onChange={(e)=>setProjectName(e.target.value)}/>
             <button onClick={handleAddProject}>{editingProjectId===null?"Add Project":"Save Changes"}</button>
@@ -80,8 +120,8 @@ function Dashboard(){
             </div>
             <div className="projects-container">
                 {statusFilteredProjects.length!==0?
-                statusFilteredProjects.map(project=>(
-                    <ProjectCard key={project.id} project={project} onDelete={handleDeleteProject} onEdit={handleEditProject}/>
+                sortedProjects.map(project=>(
+                    <ProjectCard key={project.id} project={project} onDelete={handleDeleteProject} onEdit={handleEditProject} onStatus={handleStatusProject}/>
                 ))
                 : <h1>No Matching Projects Found</h1>
                 }
