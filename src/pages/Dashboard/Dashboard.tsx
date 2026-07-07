@@ -1,4 +1,4 @@
-import { use, useState } from "react";
+import { useState, useEffect } from "react";
 import StatCard from "../../components/StatCard/StatCard";
 import {projects as initialProjects} from "../../services/projects";
 import type {Project, ProjectStatus} from "../../types/project";
@@ -6,25 +6,52 @@ import ProjectCard from "../../components/ProjectCard/ProjectCard";
 import './dashboard.css';
 function Dashboard(){
      const [projectName, setProjectName] = useState("");
-     const [projects,setProjects]=useState<Project[]>(initialProjects);
+     const [projects,setProjects]=useState<Project[]>(()=>{
+        const storedProjects=localStorage.getItem("projects");
+        if(storedProjects){
+            return JSON.parse(storedProjects);
+        }
+        else{
+            return initialProjects;
+        }
+     });
      const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
      const [searchName, setSearchName] = useState("");
      const [statusFilter,setStatusFilter]=useState("All")
-     const [sortOption,setSortOption]=useState("A-Z")
+     const [sortOption,setSortOption]=useState("A-Z");
+     const [error,setError]=useState("");
+      useEffect(()=>{
+            console.log("saving:",projects);
+            localStorage.setItem("projects",JSON.stringify(projects));
+        },[projects]);
+        
      const handleAddProject=()=>{
-        if(!projectName.trim()){
+        // if(!projectName.trim()){
+        //     return;
+        // }
+        if(projectName.trim()===""){
+            setError("Project name is required");
             return;
         }
         console.log(projectName)
-        if(editingProjectId===null){
-        const newProject: Project={
-        id: Date.now(),
-        name: projectName,
-        status:"Pending"
+        const normalizedProjectName=projectName.trim().toLowerCase();
+        const isDuplicate=projects.some(project=>project.name.trim().toLowerCase()===normalizedProjectName&&project.id!==editingProjectId);
+        if(isDuplicate){
+            setError("Project name already exists");
+            return;
+        }
+            if(editingProjectId===null){
+            const newProject: Project={
+            id: Date.now(),
+            name: projectName,
+            status:"Pending"
         }     
+        
         setProjects([...projects,newProject]);
         setProjectName("");
+        setError("");
         }
+    
         else{
             const updatedProjects=projects.map(project=>{
                 if(project.id===editingProjectId){
@@ -37,6 +64,7 @@ function Dashboard(){
             setProjects(updatedProjects);
             setEditingProjectId(null);  
             setProjectName("");
+            setError("");
         }
      console.log(projects);
      }
@@ -63,6 +91,13 @@ function Dashboard(){
             setProjectName(name);
         }
         
+        }
+        const handleProjectNameChange=(e:React.ChangeEvent<HTMLInputElement>)=>{
+            const value=e.target.value;
+            setProjectName(value);
+            if(value.trim()!==""){
+                setError("");
+            }
         }
         const totalProjects=projects.length;
         const pendingTasks=projects.filter(project=>project.status==="Pending").length;
@@ -94,6 +129,7 @@ function Dashboard(){
                 return 0;
             }
         });
+       
     return (
         
         <div>
@@ -110,8 +146,9 @@ function Dashboard(){
                 <option value="Newest">Newest</option>
                 <option value="Oldest">Oldest</option>
             </select>
-            <input type="text" placeholder="Project Name" value={projectName} onChange={(e)=>setProjectName(e.target.value)}/>
+            <input type="text" placeholder="Project Name" value={projectName} onChange={handleProjectNameChange}/>
             <button onClick={handleAddProject}>{editingProjectId===null?"Add Project":"Save Changes"}</button>
+            {error && <p className="error">{error}</p>}
             <div className="stats-container">
                 <StatCard title="Total Projects" value={totalProjects}/>
                 <StatCard title="Completed Tasks" value={completedTasks}/>
