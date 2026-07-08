@@ -24,7 +24,10 @@ function Dashboard(){
             console.log("saving:",projects);
             localStorage.setItem("projects",JSON.stringify(projects));
         },[projects]);
-        
+      const handleSubmit=(e:React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        handleAddProject();
+      };
      const handleAddProject=()=>{
         // if(!projectName.trim()){
         //     return;
@@ -146,8 +149,10 @@ function Dashboard(){
                 <option value="Newest">Newest</option>
                 <option value="Oldest">Oldest</option>
             </select>
+            <form onSubmit={handleSubmit}>
             <input type="text" placeholder="Project Name" value={projectName} onChange={handleProjectNameChange}/>
-            <button onClick={handleAddProject}>{editingProjectId===null?"Add Project":"Save Changes"}</button>
+            <button type="submit">{editingProjectId===null?"Add Project":"Save Changes"}</button>
+            </form>
             {error && <p className="error">{error}</p>}
             <div className="stats-container">
                 <StatCard title="Total Projects" value={totalProjects}/>
