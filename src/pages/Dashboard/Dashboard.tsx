@@ -3,27 +3,17 @@ import StatCard from "../../components/StatCard/StatCard";
 import {projects as initialProjects} from "../../services/projects";
 import type {Project, ProjectStatus} from "../../types/project";
 import ProjectCard from "../../components/ProjectCard/ProjectCard";
+import useLocalStorage from "../../hooks/useLocalStorage";
 import './dashboard.css';
 function Dashboard(){
      const [projectName, setProjectName] = useState("");
-     const [projects,setProjects]=useState<Project[]>(()=>{
-        const storedProjects=localStorage.getItem("projects");
-        if(storedProjects){
-            return JSON.parse(storedProjects);
-        }
-        else{
-            return initialProjects;
-        }
-     });
+     const [projects,setProjects]=useLocalStorage("projects",initialProjects)
      const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
      const [searchName, setSearchName] = useState("");
      const [statusFilter,setStatusFilter]=useState("All")
      const [sortOption,setSortOption]=useState("A-Z");
      const [error,setError]=useState("");
-      useEffect(()=>{
-            console.log("saving:",projects);
-            localStorage.setItem("projects",JSON.stringify(projects));
-        },[projects]);
+      
       const handleSubmit=(e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         handleAddProject();
