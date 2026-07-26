@@ -1,5 +1,5 @@
 import '../../styles/header.css'
-import useAuth from '../../context/useAuth';
+import useAuth from '../../hooks/useAuth';
 function Header(){
     const today=new Date().toLocaleDateString();
     const {user,login,logout}=useAuth()
