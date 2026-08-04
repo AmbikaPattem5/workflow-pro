@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState,useMemo, useCallback} from "react";
 import StatCard from "../../components/StatCard/StatCard";
 import {projects as initialProjects} from "../../services/projects";
 import type {Project, ProjectStatus} from "../../types/project";
@@ -61,11 +61,11 @@ function Dashboard(){
         }
      console.log(projects);
      }
-     const handleDeleteProject=(id:number)=>{
+     const handleDeleteProject=useCallback((id:number)=>{
         const updatedProjects=projects.filter(project=>project.id!==id);
         setProjects(updatedProjects)
-     }
-     const handleStatusProject=(id:number, status: ProjectStatus)=>{
+     }, [projects]);
+     const handleStatusProject=useCallback((id:number, status: ProjectStatus)=>{
         const updatedStatusProject=projects.map(project=>
             {
                 if(project.id===id){
@@ -77,14 +77,14 @@ function Dashboard(){
                 
         })
         setProjects(updatedStatusProject);
-     }
-     const handleEditProject=(id:number,name:string)=>{
+     }, [projects]);
+     const handleEditProject=useCallback((id:number,name:string)=>{
         {
             setEditingProjectId(id);
             setProjectName(name);
         }
         
-        }
+        }, []);
         const handleProjectNameChange=(e:React.ChangeEvent<HTMLInputElement>)=>{
             const value=e.target.value;
             setProjectName(value);
@@ -93,16 +93,29 @@ function Dashboard(){
             }
         }
         const totalProjects=projects.length;
-        const pendingTasks=projects.filter(project=>project.status==="Pending").length;
-        const completedTasks=projects.filter(project=>project.status==="Completed").length;
-        const filteredProjects=projects.filter(project=>project.name.toLowerCase().includes(searchName.toLowerCase()));
-        const statusFilteredProjects= 
-        statusFilter==="All"?filteredProjects :
-        filteredProjects.filter(project=>project.status===statusFilter);
+        const pendingTasks=useMemo(()=>{
+            return projects.filter(project=>project.status==="Pending").length;
+        }, [projects]);
+        const completedTasks=useMemo(()=>{
+            return projects.filter(project=>project.status==="Completed").length;
+        }, [projects]);
+            
+        const filteredProjects=useMemo(()=>{
+            return projects.filter(project=>project.name.toLowerCase().includes(searchName.toLowerCase()));
+        }, [projects, searchName]);
+            
+        const statusFilteredProjects= useMemo(()=>{
+            if(statusFilter==="All"){
+                return filteredProjects;
+            }
+            return filteredProjects.filter(project=>project.status===statusFilter);
+        }, [filteredProjects, statusFilter]);
+        
         console.log(filteredProjects);
         console.log("status"+statusFilteredProjects);
-        const sortedProjects=[...statusFilteredProjects];
-        sortedProjects.sort((a,b)=>{
+        const sortedProjects=useMemo(()=>{
+            const sorted=[...statusFilteredProjects];
+            sorted.sort((a,b)=>{
             if(sortOption==='A-Z'){
             return a.name.localeCompare(b.name);
             }
@@ -122,7 +135,8 @@ function Dashboard(){
                 return 0;
             }
         });
-       
+       return sorted;
+        }, [statusFilteredProjects, sortOption]);
     return (
         
         <div>

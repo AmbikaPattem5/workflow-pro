@@ -1,6 +1,6 @@
 //import {projects} from "../../services/projects";
 import type { Project, ProjectStatus } from "../../types/project";
-
+import {memo} from "react";
 type ProjectCardProps={
     project: Project;
     onDelete :(id:number)=>void,
@@ -8,6 +8,7 @@ type ProjectCardProps={
     onStatus:(id:number,status:ProjectStatus)=>void
 }
 function ProjectCard({project, onDelete, onEdit,onStatus}: ProjectCardProps){
+    console.log("ProjectCard Rendered:", project.name);
     return(
         <div className="project-card">
             <h3>{project.name}</h3>
@@ -19,4 +20,4 @@ function ProjectCard({project, onDelete, onEdit,onStatus}: ProjectCardProps){
     )
 }
 
-export default ProjectCard;
+export default memo(ProjectCard);
